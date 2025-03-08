@@ -11,7 +11,7 @@ services:
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./config/provisioning/:/etc/grafana/provisioning
+      - ./config/provisioning:/etc/grafana/provisioning
     depends_on:
       - loki
       - prometheus
