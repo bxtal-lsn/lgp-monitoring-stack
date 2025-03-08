@@ -4,15 +4,17 @@ services:
     image: grafana/grafana:latest
     container_name: grafana
     ports:
-      - "3000:3000"
+      - "9010:3000"
     environment:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=password  # Change this in production
       - GF_USERS_ALLOW_SIGN_UP=false
     volumes:
       - grafana-data:/var/lib/grafana
-      - ./config/provisioning:/etc/grafana/provisioning
-      - ./config/dashboards:/etc/grafana/dashboards
+      - ./config/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+      - ./config/provisioning/datasources:/etc/grafana/provisioning/datasources
+      # Add this new mount to store the actual dashboard JSON
+      - ./config/provisioning/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - loki
       - prometheus
@@ -24,7 +26,7 @@ services:
     image: grafana/loki:latest
     container_name: loki
     ports:
-      - "3100:3100"
+      - "9020:3100"
     volumes:
       - ./config/loki.yml:/etc/loki/local-config.yaml
       - loki-data:/var/loki
@@ -37,7 +39,7 @@ services:
     image: grafana/alloy:latest
     container_name: grafana-alloy
     ports:
-      - "12345:12345"
+      - "9030:12345"
     volumes:
       - ./config/alloy.conf:/etc/alloy/config.alloy
       - alloy-data:/var/lib/alloy/data
@@ -55,7 +57,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
-      - "9090:9090"
+      - "9040:9090"
     volumes:
       - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./config/prometheus-alerts.yml:/etc/prometheus/alerts.yml
@@ -81,7 +83,7 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     ports:
-      - "8080:8080"
+      - "9050:8080"
     restart: unless-stopped
     networks:
       - monitoring
@@ -102,7 +104,7 @@ services:
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
     ports:
-      - "9100:9100"
+      - "9060:9100"
     restart: unless-stopped
     networks:
       - monitoring
