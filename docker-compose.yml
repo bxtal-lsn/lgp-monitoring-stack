@@ -12,6 +12,7 @@ services:
     volumes:
       - grafana-data:/var/lib/grafana
       - ./config/provisioning:/etc/grafana/provisioning
+      - ./config/dashboards:/etc/grafana/dashboards
     depends_on:
       - loki
       - prometheus
