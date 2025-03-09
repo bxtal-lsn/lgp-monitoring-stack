@@ -3,6 +3,11 @@ services:
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:9010"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
     ports:
       - "9010:3000"
     environment:
@@ -119,15 +124,3 @@ volumes:
 networks:
   monitoring:
     driver: bridge
-
-deploy:
-  resources:
-    limits:
-      cpus: '0.5'
-      memory: 512M
-
-healthcheck:
-  test: ["CMD", "wget", "-q", "--spider", "http://localhost:9010"]
-  interval: 30s
-  timeout: 10s
-  retries: 3
