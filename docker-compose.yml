@@ -112,7 +112,6 @@ services:
 volumes:
   grafana-data:
   loki-data:
-  loki-wal-data:  
   prometheus-data:
   alloy-data:
     driver: local
@@ -120,3 +119,15 @@ volumes:
 networks:
   monitoring:
     driver: bridge
+
+deploy:
+  resources:
+    limits:
+      cpus: '0.5'
+      memory: 512M
+
+healthcheck:
+  test: ["CMD", "wget", "-q", "--spider", "http://localhost:9010"]
+  interval: 30s
+  timeout: 10s
+  retries: 3
