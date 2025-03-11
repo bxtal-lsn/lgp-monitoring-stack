@@ -13,8 +13,6 @@ This stack implements a comprehensive monitoring solution with the following com
 - **cAdvisor**: Container resource usage and performance monitoring
 - **Node Exporter**: Physical host metrics collector (CPU, memory, disk, network)
 
-![Monitoring Stack Architecture](https://via.placeholder.com/800x400?text=Monitoring+Stack+Architecture)
-
 ## Component Details
 
 | Component | Purpose | Default Port | Data Retention |
