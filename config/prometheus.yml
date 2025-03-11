@@ -10,14 +10,12 @@ alerting:
   alertmanagers:
     - static_configs:
         - targets:
-          # We're not setting up Alertmanager in this config
-          # but you can add it later if needed
 
 scrape_configs:
   # Prometheus itself
   - job_name: 'prometheus'
     static_configs:
-      - targets: ['localhost:9090']
+      - targets: ['prometheus:9090']
 
   # Container metrics via cAdvisor
   - job_name: 'cadvisor'
@@ -44,4 +42,4 @@ scrape_configs:
   # Alloy metrics
   - job_name: 'alloy'
     static_configs:
-      - targets: ['alloy:12345']  # Default metrics port for Alloy
+      - targets: ['alloy:12345']
