@@ -1,0 +1,51 @@
+{
+  "type": "message",
+  "attachments": [
+    {
+      "contentType": "application/vnd.microsoft.card.adaptive",
+      "content": {
+        "$schema": "http://adaptivecards.io/schemas/adaptive-card.json",
+        "type": "AdaptiveCard",
+        "version": "1.3",
+        "body": [
+          {
+            "type": "TextBlock",
+            "text": "{{ if eq .Status "firing" }}🔥{{ else }}✅{{ end }} {{ .Status | title }}: {{ .CommonLabels.alertname }}",
+            "weight": "Bolder",
+            "size": "Large"
+          },
+          {
+            "type": "TextBlock", 
+            "text": "{{ .CommonAnnotations.summary }}",
+            "wrap": true
+          },
+          {
+            "type": "FactSet",
+            "facts": [
+              {
+                "title": "Status",
+                "value": "{{ .Status | title }}"
+              },
+              {
+                "title": "Severity",
+                "value": "{{ .CommonLabels.severity | title }}"
+              }
+            ]
+          },
+          {
+            "type": "TextBlock",
+            "text": "{{ .CommonAnnotations.description }}",
+            "wrap": true
+          }
+        ],
+        "actions": [
+          {
+            "type": "Action.OpenUrl",
+            "title": "View in Alertmanager",
+            "url": "{{ .ExternalURL }}"
+          }
+        ]
+      }
+    }
+  ]
+}

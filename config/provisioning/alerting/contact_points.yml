@@ -1,0 +1,21 @@
+apiVersion: 1
+
+contactPoints:
+  - name: ms-teams
+    receivers:
+      - uid: teams-notifications
+        type: teams
+        settings:
+          url: https://prod-152.westeurope.logic.azure.com:443/workflows/6040474cfb314615aabd47694804d7e7/triggers/manual/paths/invoke?api-version=2016-06-01&sp=%2Ftriggers%2Fmanual%2Frun&sv=1.0&sig=ehfajgttd-2NC7rdEL5z9rylE4IiyVpgPjiOfDqF_z0
+          title: "{{ if eq .Status \"firing\" }}🔥{{ else }}✅{{ end }} [{{ .Status | toUpper }}] {{ .CommonLabels.alertname }}"
+          message: |-
+            {{ if ne .Status "firing" }}Resolved{{ else }}{{ end }}: {{ .CommonAnnotations.summary }}
+            
+            {{ .CommonAnnotations.description }}
+          
+            {{- if gt (len .Alerts.Firing) 0 }}
+            Alerts:
+            {{- range .Alerts.Firing }}
+            - {{ .Labels.instance }} {{ .Labels.job }}: {{ .Annotations.summary }}
+            {{- end }}
+            {{- end }}
