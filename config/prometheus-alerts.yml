@@ -40,14 +40,22 @@ groups:
           description: "Container {{ $labels.name }} CPU usage is > 80% for 5 minutes"
 
       - alert: ContainerHighMemory
-        expr: (container_memory_usage_bytes{name!=""} / container_spec_memory_limit_bytes{name!=""} * 100) > 80
-        for: 5m
+        expr: |
+          (
+            container_memory_usage_bytes{name!=""}
+            /
+            container_spec_memory_limit_bytes{name!=""}
+            * 100 > 90
+          )
+          and
+          container_spec_memory_limit_bytes{name!=""} > 0
+        for: 10m
         labels:
           severity: warning
         annotations:
           summary: "High memory usage in container {{ $labels.name }}"
-          description: "Container {{ $labels.name }} memory usage is > 80% for 5 minutes"
-          
+          description: "Container {{ $labels.name }} ({{ $labels.image }}) memory usage is {{ printf \"%.1f\" $value }}% of its limit for 10 minutes"
+
       - alert: ContainerDown
         expr: absent(container_last_seen{name!=""})
         for: 1m
