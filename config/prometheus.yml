@@ -2,7 +2,7 @@ global:
   scrape_interval: 60s
   evaluation_interval: 60s
   scrape_timeout: 10s
-  sample_limit: 1000  # Limit samples per scrape to prevent overload
+  sample_limit: 1000
 
 # Rule files 
 rule_files:
@@ -14,31 +14,43 @@ alerting:
         - targets:
 
 scrape_configs:
-  # Prometheus itself
+  # Prometheus
   - job_name: 'prometheus'
     sample_limit: 50000
     static_configs:
       - targets: ['prometheus:9090']
 
   # Container metrics via cAdvisor
-  - job_name: 'cadvisor'
+  - job_name: 'ktpv-orch_cadvisor'
     sample_limit: 50000
     static_configs:
       - targets: ['cadvisor:8080']
     metrics_path: /metrics
     scheme: http
+  
+  - job_name: 'ktpv-apps01_cadvisor'
+    sample_limit: 50000
+    static_configs:
+      - targets: ['10.249.84.41:9050']
+    metrics_path: /metrics
+    scheme: http
 
-  # Host metrics via node-exporter
-  - job_name: 'node-exporter'
+  # Metrics via node-exporter
+  - job_name: 'ktpv-orch_node-exporter'
     sample_limit: 50000
     static_configs:
       - targets: ['node-exporter:9100']
 
-  # Loki metrics
-  - job_name: 'loki'
+  - job_name: 'ktpv-apps01_node-exporter'
     sample_limit: 50000
     static_configs:
-      - targets: ['loki:3100']
+      - targets: ['10.249.84.41:9060']
+
+  # Loki metrics
+  #  - job_name: 'loki'
+  #    sample_limit: 50000
+  #    static_configs:
+  #      - targets: ['loki:3100']
 
   # Grafana metrics
   - job_name: 'grafana'
@@ -47,7 +59,7 @@ scrape_configs:
       - targets: ['grafana:3000']
 
   # Alloy metrics
-  - job_name: 'alloy'
-    sample_limit: 50000
-    static_configs:
-      - targets: ['alloy:12345']
+  #  - job_name: 'alloy'
+  #    sample_limit: 50000
+  #    static_configs:
+  #      - targets: ['alloy:12345']

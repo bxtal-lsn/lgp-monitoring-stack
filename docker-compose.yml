@@ -24,40 +24,39 @@ services:
       - ./config/provisioning/alerting:/etc/grafana/provisioning/alerting        
       - ./config/dashboards:/var/lib/grafana/dashboards
     depends_on:
-      - loki
       - prometheus
     restart: unless-stopped
     networks:
       - monitoring
 
-  loki:
-    image: grafana/loki:latest
-    container_name: loki
-    ports:
-      - "9020:3100"
-    volumes:
-      - ./config/loki.yml:/etc/loki/local-config.yaml
-      - loki-data:/var/loki
-    restart: unless-stopped
-    networks:
-      - monitoring
+        #  loki:
+        #    image: grafana/loki:latest
+        #    container_name: loki
+        #    ports:
+        #      - "9020:3100"
+        #    volumes:
+        #      - ./config/loki.yml:/etc/loki/local-config.yaml
+        #      - loki-data:/var/loki
+        #    restart: unless-stopped
+        #    networks:
+        #      - monitoring
 
-  alloy:
-    image: grafana/alloy:latest
-    container_name: grafana-alloy
-    ports:
-      - "9030:12345"
-    volumes:
-      - ./config/alloy.conf:/etc/alloy/config.alloy
-      - alloy-data:/var/lib/alloy/data
-    command:
-      - run
-      - --server.http.listen-addr=0.0.0.0:12345
-      - --storage.path=/var/lib/alloy/data
-      - /etc/alloy/config.alloy
-    restart: unless-stopped    
-    networks:
-      - monitoring
+        #  alloy:
+        #    image: grafana/alloy:latest
+        #    container_name: grafana-alloy
+        #    ports:
+        #      - "9030:12345"
+        #    volumes:
+        #      - ./config/alloy.conf:/etc/alloy/config.alloy
+        #      - alloy-data:/var/lib/alloy/data
+        #    command:
+        #      - run
+        #      - --server.http.listen-addr=0.0.0.0:12345
+        #      - --storage.path=/var/lib/alloy/data
+        #      - /etc/alloy/config.alloy
+        #    restart: unless-stopped    
+        #    networks:
+        #      - monitoring
 
   # AlertManager for handling alerts
   alertmanager:
