@@ -1,10 +1,10 @@
 services:
   # Grafana for visualization
-  grafanao:
+  grafana:
     image: grafana/grafana:latest
     container_name: grafana
     healthcheck:
-      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3003"]
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:3000"]
       interval: 30s
       timeout: 10s
       retries: 3
@@ -14,12 +14,15 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=password  # Change this in production
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_UNIFIED_ALERTING_ENABLED=true
+      - GF_ALERTING_ENABLED=false
+      - GF_UNIFIED_ALERTING_PROMETHEUS_ALERTS_ENABLED=true
     volumes:
       - grafana-data:/var/lib/grafana
       - ./config/provisioning/dashboards:/etc/grafana/provisioning/dashboards
       - ./config/provisioning/datasources:/etc/grafana/provisioning/datasources
-      # Add this new mount to store the actual dashboard JSON
-      - ./config/provisioning/dashboards:/var/lib/grafana/dashboards
+      - ./config/provisioning/alerting:/etc/grafana/provisioning/alerting        
+      - ./config/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - loki
       - prometheus
@@ -32,7 +35,9 @@ services:
     container_name: loki
     ports:
       - "9020:3100"
-    command: -config.file=/etc/loki/local-config.yaml
+    volumes:
+      - ./config/loki.yml:/etc/loki/local-config.yaml
+      - loki-data:/var/loki
     restart: unless-stopped
     networks:
       - monitoring
@@ -51,6 +56,18 @@ services:
       - --storage.path=/var/lib/alloy/data
       - /etc/alloy/config.alloy
     restart: unless-stopped    
+    networks:
+      - monitoring
+
+  # AlertManager for handling alerts
+  alertmanager:
+    image: quay.io/prometheus/alertmanager:latest
+    container_name: alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./config/alertmanager.yml:/etc/alertmanager/config.yml
+    restart: unless-stopped
     networks:
       - monitoring
 
@@ -128,6 +145,10 @@ volumes:
   grafana-data:
   prometheus-data:
   alloy-data:
+    driver: local
+  loki-data:
+    driver: local
+  alertmanager-data:
     driver: local
 
 networks:
