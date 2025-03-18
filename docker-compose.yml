@@ -120,6 +120,23 @@ services:
     restart: unless-stopped
     networks:
       - monitoring
+  alloy:
+    image: grafana/alloy:latest
+    container_name: alloy
+    volumes:
+      - ./config/config.alloy:/etc/alloy/config.alloy
+      - /home/container_user/logs:/var/log:ro  # Read-only mount of host logs
+      - /var/run/docker.sock:/var/run/docker.sock        
+    command:
+      - run
+      - --server.http.listen-addr=0.0.0.0:12345
+      - --storage.path=/var/lib/alloy/data
+      - /etc/alloy/config.alloy
+    ports:
+      - "12345:12345"  # Expose the Alloy UI
+    restart: unless-stopped
+    networks:
+      - monitoring
 
 volumes:
   grafana-data:

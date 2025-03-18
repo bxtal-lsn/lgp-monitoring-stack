@@ -1,0 +1,71 @@
+// File log collection for application.log
+local.file_match "application_logs" {
+  path_targets = [{"__path__" = "/var/log/application.log"}]
+}
+
+loki.source.file "app_logs" {
+  targets = local.file_match.application_logs.targets
+  forward_to = [loki.process.application_logs.receiver]
+}
+
+// Process application logs
+loki.process "application_logs" {
+  // Extract log levels with regex
+  stage.regex {
+    expression = "(?i)(?P<level>error|warn|info|debug)"
+  }
+  
+  // Add extracted level as a label
+  stage.labels {
+    values = {
+      level = "",
+    }
+  }
+  
+  // Add a source label to distinguish from container logs
+  stage.static_labels {
+    values = {
+      source = "file",
+    }
+  }
+  
+  forward_to = [loki.write.loki_gateway.receiver]
+}
+
+// Container log collection - KEEPING THIS AS IT WORKS
+discovery.docker "containers" {
+  host = "unix:///var/run/docker.sock"
+}
+
+discovery.relabel "containers" {
+  targets = discovery.docker.containers.targets
+  rule {
+    source_labels = ["__meta_docker_container_name"]
+    target_label  = "container"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_id"]
+    target_label  = "container_id"
+  }
+  rule {
+    source_labels = ["__meta_docker_container_label_com_docker_compose_service"]
+    target_label  = "service"
+  }
+  rule {
+    replacement = "container"
+    target_label = "source"
+  }
+}
+
+loki.source.docker "container_log_collector" {
+  host = "unix:///var/run/docker.sock"
+  targets = discovery.relabel.containers.output
+  forward_to = [loki.write.loki_gateway.receiver]
+}
+
+// Send all logs to Loki
+loki.write "loki_gateway" {
+  endpoint {
+    url = "http://loki:3100/loki/api/v1/push"
+  }
+}
