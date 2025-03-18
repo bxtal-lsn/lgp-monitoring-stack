@@ -47,10 +47,10 @@ scrape_configs:
       - targets: ['10.249.84.41:9060']
 
   # Loki metrics
-  #  - job_name: 'loki'
-  #    sample_limit: 50000
-  #    static_configs:
-  #      - targets: ['loki:3100']
+  - job_name: 'loki'
+    sample_limit: 50000
+    static_configs:
+      - targets: ['loki:3100']
 
   # Grafana metrics
   - job_name: 'grafana'
@@ -59,7 +59,7 @@ scrape_configs:
       - targets: ['grafana:3000']
 
   # Alloy metrics
-  #  - job_name: 'alloy'
-  #    sample_limit: 50000
-  #    static_configs:
-  #      - targets: ['alloy:12345']
+  - job_name: 'alloy'
+    sample_limit: 50000
+    static_configs:
+      - targets: ['10.249.84.41:9030']

@@ -1,5 +1,4 @@
 services:
-  # Grafana for visualization
   grafana:
     image: grafana/grafana:latest
     container_name: grafana
@@ -29,34 +28,15 @@ services:
     networks:
       - monitoring
 
-        #  loki:
-        #    image: grafana/loki:latest
-        #    container_name: loki
-        #    ports:
-        #      - "9020:3100"
-        #    volumes:
-        #      - ./config/loki.yml:/etc/loki/local-config.yaml
-        #      - loki-data:/var/loki
-        #    restart: unless-stopped
-        #    networks:
-        #      - monitoring
-
-        #  alloy:
-        #    image: grafana/alloy:latest
-        #    container_name: grafana-alloy
-        #    ports:
-        #      - "9030:12345"
-        #    volumes:
-        #      - ./config/alloy.conf:/etc/alloy/config.alloy
-        #      - alloy-data:/var/lib/alloy/data
-        #    command:
-        #      - run
-        #      - --server.http.listen-addr=0.0.0.0:12345
-        #      - --storage.path=/var/lib/alloy/data
-        #      - /etc/alloy/config.alloy
-        #    restart: unless-stopped    
-        #    networks:
-        #      - monitoring
+  loki:
+    image: grafana/loki:latest
+    container_name: loki
+    ports:
+      - "9020:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+    networks:
+      - monitoring
 
   # AlertManager for handling alerts
   alertmanager:
@@ -88,6 +68,7 @@ services:
       - '--web.console.libraries=/etc/prometheus/console_libraries'
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--web.enable-lifecycle'
+      - "--web.enable-remote-write-receiver"
     restart: unless-stopped
     networks:
       - monitoring
