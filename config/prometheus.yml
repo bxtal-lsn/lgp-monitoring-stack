@@ -20,32 +20,6 @@ scrape_configs:
     static_configs:
       - targets: ['prometheus:9090']
 
-  # Container metrics via cAdvisor
-  - job_name: 'ktpv-orch_cadvisor'
-    sample_limit: 50000
-    static_configs:
-      - targets: ['cadvisor:8080']
-    metrics_path: /metrics
-    scheme: http
-  
-  - job_name: 'ktpv-apps01_cadvisor'
-    sample_limit: 50000
-    static_configs:
-      - targets: ['10.249.84.41:9050']
-    metrics_path: /metrics
-    scheme: http
-
-  # Metrics via node-exporter
-  - job_name: 'ktpv-orch_node-exporter'
-    sample_limit: 50000
-    static_configs:
-      - targets: ['node-exporter:9100']
-
-  - job_name: 'ktpv-apps01_node-exporter'
-    sample_limit: 50000
-    static_configs:
-      - targets: ['10.249.84.41:9060']
-
   # Loki metrics
   - job_name: 'loki'
     sample_limit: 50000
@@ -58,8 +32,15 @@ scrape_configs:
     static_configs:
       - targets: ['grafana:3000']
 
-  # Alloy metrics
-  - job_name: 'alloy'
+  # Replace node-exporter job with Alloy
+  - job_name: 'ktpv-orch_node-exporter'
     sample_limit: 50000
     static_configs:
-      - targets: ['10.249.84.41:9030']
+      - targets: ['alloy:12345']  # Scrape from Alloy's metrics endpoint
+    metrics_path: /metrics
+
+  - job_name: 'ktpv-apps01_node-exporter'
+    sample_limit: 50000
+    static_configs:
+      - targets: ['10.249.84.41:12345']  # Adjust IP as needed
+    metrics_path: /metrics
