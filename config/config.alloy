@@ -30,7 +30,7 @@ prometheus.scrape "host_metrics" {
   scrape_timeout = "10s"
   job_name = "node"
 }
-
+  
 prometheus.remote_write "prometheus" {
   endpoint {
     url = "http://prometheus:9090/api/v1/write"

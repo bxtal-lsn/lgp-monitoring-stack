@@ -32,15 +32,20 @@ scrape_configs:
     static_configs:
       - targets: ['grafana:3000']
 
-  # Replace node-exporter job with Alloy
-  - job_name: 'ktpv-orch_node-exporter'
+  # Node metrics from Alloy - with custom instance name
+  - job_name: 'node'
     sample_limit: 50000
     static_configs:
-      - targets: ['alloy:12345']  # Scrape from Alloy's metrics endpoint
+      - targets: ['alloy:12345']
+        labels:
+          instance: 'main-server'  # Use any name you want
     metrics_path: /metrics
 
-  - job_name: 'ktpv-apps01_node-exporter'
+  # Remote node for the second server
+  - job_name: 'node-app-server01'
     sample_limit: 50000
     static_configs:
-      - targets: ['10.249.84.41:12345']  # Adjust IP as needed
+      - targets: ['10.249.84.41:12345']
+        labels:
+          instance: 'app-server-01'  # Use any name you want
     metrics_path: /metrics
